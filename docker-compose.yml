@@ -1,0 +1,63 @@
+version: '3'
+services:
+        postgres-db:
+                image: 'postgres:latest'
+                environment:
+                        - POSTGRES_PASSWORD=postgres_password
+        redis-db:
+                image: 'redis:latest'
+        router:
+                build:
+                        context: './router'
+                        dockerfile: 'Dockerfile.dev'
+                image: 'rohit.pant/complex-router:dev'
+                restart: always
+                ports:
+                        - '8080:80'
+                depends_on:
+                        - api
+                        - client
+        api:
+                build:
+                        context: './server'
+                        dockerfile: 'Dockerfile.dev'
+                image: 'rohit.pant/complex-server:dev'
+                volumes:
+                        - /usr/local/app/node_modules
+                        - ./server:/usr/local/app
+                environment:
+                        - REDIS_HOST=redis-db
+                        - REDIS_PORT=6379
+                        - PGHOST=postgres-db
+                        - PGUSER=postgres
+                        - PGDATABASE=postgres
+                        - PGPASSWORD=postgres_password
+                        - PGPORT=5432
+                depends_on:
+                        - redis-db
+                        - postgres-db
+        client:
+                stdin_open: true
+                build:
+                        context: './client'
+                        dockerfile: 'Dockerfile.dev'
+                image: 'rohit.pant/complex-client:dev'
+                volumes:
+                        - /usr/local/app/node_modules
+                        - ./client:/usr/local/app
+                depends_on:
+                        - api
+        worker:
+                build:
+                        context: './worker'
+                        dockerfile: 'Dockerfile.dev'
+                image: 'rohit.pant/complex-worker:dev'
+                volumes:
+                        - /usr/local/app/node_modules
+                        - ./worker:/usr/local/app
+                environment:
+                        - REDIS_HOST=redis-db
+                        - REDIS_PORT=6379
+                depends_on:
+                        - redis-db
+                        - postgres-db

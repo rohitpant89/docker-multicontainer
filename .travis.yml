@@ -7,24 +7,24 @@ services:
 
 ##Pre-requsite installation/process
 before_install:
-        - docker build -f ./client/Dockerfile.dev -t rohit.pant/complex-client:test ./client
-#        - docker build -f ./server/Dockerfile.dev -t rohit.pant/complex-server:test ./server
+        - docker build -f ./client/Dockerfile.dev -t rohitpan89/complex-client:test ./client
+#        - docker build -f ./server/Dockerfile.dev -t rohitpan89/complex-server:test ./server
 
 language: generic
 
 ##Command to execute by travis CI
 script:
-        - docker run -e CI=true rohit.pant/complex-client:test npm run test
-#        - docker run -e CI=true rohit.pant/complex-server:test npm run test
+        - docker run -e CI=true rohitpan89/complex-client:test npm run test
+#        - docker run -e CI=true rohitpan89/complex-server:test npm run test
 
 after_success:
-        - docker build -t rohit.pant/complex-client ./client
-        - docker build -t rohit.pant/complex-server ./server
-        - docker build -t rohit.pant/complex-worker ./worker
-        - docker build -t rohit.pant/complex-router ./router
+        - docker build -t rohitpan89/complex-client ./client
+        - docker build -t rohitpan89/complex-server ./server
+        - docker build -t rohitpan89/complex-worker ./worker
+        - docker build -t rohitpan89/complex-router ./router
 ###Login to docker
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-        - docker push rohit.pant/complex-client
-        - docker push rohit.pant/complex-server
-        - docker push rohit.pant/complex-worker
-        - docker push rohit.pant/complex-router
+        - docker push rohitpan89/complex-client
+        - docker push rohitpan89/complex-server
+        - docker push rohitpan89/complex-worker
+        - docker push rohitpan89/complex-router

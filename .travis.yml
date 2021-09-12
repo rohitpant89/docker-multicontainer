@@ -1,0 +1,30 @@
+##Ask travis for super user permission
+sudo: required
+
+##Ask travis a docker setup
+services:
+        - docker
+
+##Pre-requsite installation/process
+before_install:
+        - docker build -f ./client/Dockerfile.dev -t rohit.pant/complex-client:test ./client
+#        - docker build -f ./server/Dockerfile.dev -t rohit.pant/complex-server:test ./server
+
+language: generic
+
+##Command to execute by travis CI
+script:
+        - docker run -e CI=true rohit.pant/complex-client:test npm run test
+#        - docker run -e CI=true rohit.pant/complex-server:test npm run test
+
+after_success:
+        - docker build -t rohit.pant/complex-client ./client
+        - docker build -t rohit.pant/complex-server ./server
+        - docker build -t rohit.pant/complex-worker ./worker
+        - docker build -t rohit.pant/complex-router ./router
+###Login to docker
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+        - docker push rohit.pant/complex-client
+        - docker push rohit.pant/complex-server
+        - docker push rohit.pant/complex-worker
+        - docker push rohit.pant/complex-router
